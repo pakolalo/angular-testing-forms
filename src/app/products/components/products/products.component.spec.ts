@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { generateManyProducts } from 'src/app/models/product.mock';
 import { ProductsService } from 'src/app/services/product.service';
-import { asyncData, asyncError, mockObservable, mockPromise, query, queryById } from 'src/testing';
+import { asyncData, asyncError, mockObservable, mockPromise, query, queryById, getText } from 'src/testing';
 
 import { ProductsComponent } from './products.component';
 import { ProductComponent } from './../product/product.component';
 import { ValueService } from 'src/app/services/value.service';
-import { By } from '@angular/platform-browser';
 
 describe('ProductsComponent', () => {
   let component: ProductsComponent;
@@ -110,17 +109,17 @@ describe('ProductsComponent', () => {
       const mockMsg = 'my mock string';
       valueService.getPromiseValue.and.returnValue(mockPromise(mockMsg));
       // const btnDe = fixture.debugElement.query(By.css('[data-testid="btn-promise"]'));
-      const btnDe = query(fixture, '[data-testid="btn-promise"]');
+      const btnDe = queryById(fixture, 'btn-promise');
       // Act
       btnDe.triggerEventHandler('click', null);
       tick();
       fixture.detectChanges();
       // const rta'De = fixture.debugElement.query(By.css('p.rta'));
-      const rtaDe = queryById(fixture, 'rta');
+      const textRta = getText(fixture, 'rta');
       // Assert
       expect(component.rta).toEqual(mockMsg);
       expect(valueService.getPromiseValue).toHaveBeenCalled();
-      expect(rtaDe.nativeElement.textContent).toEqual(mockMsg);
+      expect(textRta).toContain(mockMsg);
     }));
   })
 
