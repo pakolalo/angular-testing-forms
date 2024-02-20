@@ -31,4 +31,39 @@ fdescribe('RegisterFormComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should the emailField be invalid', () => {
+    //component.form.get('email')?.setValue('esto no es un correo');
+    component.emailField?.setValue('esto no es un correo'); // emailField lo obtuvimos del get emailField de register form component
+    //expect(component.form.get('email')?.invalid).toBeTruthy();
+    expect(component.emailField?.invalid).withContext('wrong email').toBeTruthy();
+
+    component.emailField?.setValue('');
+    expect(component.emailField?.invalid).withContext('empty').toBeTruthy();
+  });
+
+  it('should the passwordField be invalid', () => {
+    component.passwordField?.setValue('');
+    expect(component.passwordField?.invalid).withContext('empty').toBeTruthy();
+
+    component.passwordField?.setValue('12345');
+    expect(component.passwordField?.invalid).withContext('> 6').toBeTruthy();
+
+    component.passwordField?.setValue('iuhsdeuiwdheui');
+    expect(component.passwordField?.invalid).withContext('without numbers').toBeTruthy();
+
+    component.passwordField?.setValue('pass123');
+    expect(component.passwordField?.valid).withContext('correct password').toBeTruthy();
+  });
+
+  it('should the form be invalid', () => {
+    component.form.patchValue({
+      name: 'Isco',
+      email: 'mail@mal.com',
+      password: '121212',
+      confirmPassword: '121212',
+      checkTerms: false
+    });
+    expect(component.form.invalid).toBeTruthy();
+  });
 });
