@@ -24,6 +24,8 @@ export class RegisterFormComponent implements OnInit {
     }
   );
 
+  status: 'loading' | 'success' | 'error' | 'init' = 'init';
+
   constructor(
     private fb: FormBuilder,
     private usersService: UsersService
@@ -34,11 +36,13 @@ export class RegisterFormComponent implements OnInit {
   register(event: Event) {
     event.preventDefault();
     if (this.form.valid) {
+      this.status = 'loading';
       const value = this.form.value;
       this.usersService.create(value)
       .subscribe((rta) => {
         console.log(rta);
         // redirect
+        this.status = 'success';
       });
     } else {
       this.form.markAllAsTouched();
