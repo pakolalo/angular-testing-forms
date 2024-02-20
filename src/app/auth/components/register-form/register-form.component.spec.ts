@@ -3,7 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { RegisterFormComponent } from './register-form.component';
 import { UsersService } from 'src/app/services/user.service';
-import { asyncData, getText, mockObservable, query, setInputValue } from 'src/testing';
+import { asyncData, clickEvent, getText, mockObservable, query, setCheckboxValue, setInputValue } from 'src/testing';
 import { generateOneUser } from 'src/app/models/user.mock';
 
 fdescribe('RegisterFormComponent', () => {
@@ -125,6 +125,33 @@ fdescribe('RegisterFormComponent', () => {
     userServiceSpy.create.and.returnValue(asyncData(mockUser));
     //Act
     component.register(new Event('submit'));
+    expect(component.status).toEqual('loading');
+
+    tick(); // exec pending tasks
+    fixture.detectChanges();
+
+    expect(component.status).toEqual('success');
+    expect(component.form.valid).toBeTruthy();
+    expect(userServiceSpy.create).toHaveBeenCalled();
+  }));
+
+  it('should send the form successfully demo UI', fakeAsync(() => {
+
+    setInputValue(fixture, 'input#name', 'Isco');
+    setInputValue(fixture, 'input#email', 'mail@mal.com');
+    setInputValue(fixture, 'input#password', '123456');
+    setInputValue(fixture, 'input#confirmPassword', '123456');
+    setCheckboxValue(fixture, 'input#terms', true);
+    console.log('--------------'.repeat(50));
+    console.log(component.form.value);
+
+    const mockUser = generateOneUser();
+    userServiceSpy.create.and.returnValue(asyncData(mockUser));
+    //Act
+    //component.register(new Event('submit'));
+    //clickEvent(fixture, 'btn-submit', true);
+    query(fixture, 'form').triggerEventHandler('ngSubmit', new Event('submit'));
+    fixture.detectChanges();
     expect(component.status).toEqual('loading');
 
     tick(); // exec pending tasks
