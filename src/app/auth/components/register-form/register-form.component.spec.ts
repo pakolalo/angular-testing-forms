@@ -3,7 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { RegisterFormComponent } from './register-form.component';
 import { UsersService } from 'src/app/services/user.service';
-import { asyncData, clickEvent, getText, mockObservable, query, setCheckboxValue, setInputValue } from 'src/testing';
+import { asyncData, clickElement, clickEvent, getText, mockObservable, query, setCheckboxValue, setInputValue } from 'src/testing';
 import { generateOneUser } from 'src/app/models/user.mock';
 
 fdescribe('RegisterFormComponent', () => {
@@ -149,8 +149,9 @@ fdescribe('RegisterFormComponent', () => {
     userServiceSpy.create.and.returnValue(asyncData(mockUser));
     //Act
     //component.register(new Event('submit'));
-    //clickEvent(fixture, 'btn-submit', true);
-    query(fixture, 'form').triggerEventHandler('ngSubmit', new Event('submit'));
+    //clickEvent(fixture, 'btn-submit', true); este solo hace al evento (click)="funcion()"
+    //query(fixture, 'form').triggerEventHandler('ngSubmit', new Event('submit')); este es un ejemplo correcto
+    clickElement(fixture, 'btn-submit', true);
     fixture.detectChanges();
     expect(component.status).toEqual('loading');
 
