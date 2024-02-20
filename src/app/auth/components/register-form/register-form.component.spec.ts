@@ -3,7 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { RegisterFormComponent } from './register-form.component';
 import { UsersService } from 'src/app/services/user.service';
-import { asyncData, clickElement, clickEvent, getText, mockObservable, query, setCheckboxValue, setInputValue } from 'src/testing';
+import { asyncData, asyncError, clickElement, clickEvent, getText, mockObservable, query, setCheckboxValue, setInputValue } from 'src/testing';
 import { generateOneUser } from 'src/app/models/user.mock';
 
 fdescribe('RegisterFormComponent', () => {
@@ -159,6 +159,32 @@ fdescribe('RegisterFormComponent', () => {
     fixture.detectChanges();
 
     expect(component.status).toEqual('success');
+    expect(component.form.valid).toBeTruthy();
+    expect(userServiceSpy.create).toHaveBeenCalled();
+  }));
+
+  it('should send the form from the UI and "loading" => "error"', fakeAsync(() => {
+
+    setInputValue(fixture, 'input#name', 'Isco');
+    setInputValue(fixture, 'input#email', 'mail@mal.com');
+    setInputValue(fixture, 'input#password', '123456');
+    setInputValue(fixture, 'input#confirmPassword', '123456');
+    setCheckboxValue(fixture, 'input#terms', true);
+
+    const mockUser = generateOneUser();
+    userServiceSpy.create.and.returnValue(asyncError(mockUser));
+    //Act
+    //component.register(new Event('submit'));
+    //clickEvent(fixture, 'btn-submit', true); este solo hace al evento (click)="funcion()"
+    //query(fixture, 'form').triggerEventHandler('ngSubmit', new Event('submit')); este es un ejemplo correcto
+    clickElement(fixture, 'btn-submit', true);
+    fixture.detectChanges();
+    expect(component.status).toEqual('loading');
+
+    tick(); // exec pending tasks
+    fixture.detectChanges();
+
+    expect(component.status).toEqual('error');
     expect(component.form.valid).toBeTruthy();
     expect(userServiceSpy.create).toHaveBeenCalled();
   }));
