@@ -3,7 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { RegisterFormComponent } from './register-form.component';
 import { UsersService } from 'src/app/services/user.service';
-import { getText, query, queryById } from 'src/testing';
+import { getText, query, setInputValue } from 'src/testing';
 
 fdescribe('RegisterFormComponent', () => {
   let component: RegisterFormComponent;
@@ -75,6 +75,17 @@ fdescribe('RegisterFormComponent', () => {
     inputEl.value = "Esto no es un correo";
     inputEl.dispatchEvent(new Event('input'));
     inputEl.dispatchEvent(new Event('blur'));
+
+    fixture.detectChanges();
+
+    expect(component.emailField?.invalid).withContext('wrong email').toBeTruthy();
+
+    const textError = getText(fixture, 'emailField-email');
+    expect(textError).toContain("It's not a email");
+  });
+
+  it('should the emailField be invalid from UI with setIpuntValue', () => {
+    setInputValue(fixture, 'input#email', 'Esto no es un correo');
 
     fixture.detectChanges();
 
