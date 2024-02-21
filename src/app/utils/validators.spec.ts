@@ -1,5 +1,7 @@
 import { FormControl, FormGroup } from "@angular/forms";
 import { MyValidators } from "./validators";
+import { UsersService } from "../services/user.service";
+import { mockObservable } from "src/testing";
 
 fdescribe('Tests for MyValidators', () => {
 
@@ -51,7 +53,7 @@ fdescribe('Tests for MyValidators', () => {
       expect(rta?.match_password).toBeTrue();
     });
 
-    it('should return object with error', () => {
+    it('should return object with error', () => {// cuando los campos no coinciden en el formulario
       //Arrange
       const group = new FormGroup({
         otro: new FormControl('123456974'),
@@ -63,6 +65,22 @@ fdescribe('Tests for MyValidators', () => {
       }
       //Assert
       expect(fn).toThrow(new Error('matchPasswords: fields not found'));
+    });
+  });
+
+  describe('Tests for validateEmailAsync', () => {
+
+    it('should return null with valid email', (doneFn) => {
+      //Arrange
+      const userService: jasmine.SpyObj<UsersService> = jasmine.createSpyObj('UserService', ['isAvailableByEmail']);
+      const control = new FormControl('nico@mail.com');
+      //Act
+      userService.isAvailableByEmail.and.returnValue(mockObservable({isAvailable: true}));
+      const validator = MyValidators.validateEmailAsync(userService);
+      validator(control).subscribe(rta => {
+        expect(rta).toBeNull();
+        doneFn();
+      });
     });
   });
 });
