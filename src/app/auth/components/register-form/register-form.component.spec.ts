@@ -6,13 +6,13 @@ import { UsersService } from 'src/app/services/user.service';
 import { asyncData, asyncError, clickElement, clickEvent, getText, mockObservable, query, setCheckboxValue, setInputValue } from 'src/testing';
 import { generateOneUser } from 'src/app/models/user.mock';
 
-xdescribe('RegisterFormComponent', () => {
+fdescribe('RegisterFormComponent', () => {
   let component: RegisterFormComponent;
   let fixture: ComponentFixture<RegisterFormComponent>;
   let userServiceSpy : jasmine.SpyObj<UsersService>;
 
   beforeEach(async () => {
-    const spy = jasmine.createSpyObj('UserService', ['create']);
+    const spy = jasmine.createSpyObj('UserService', ['create', 'isAvailableByEmail']);
 
     await TestBed.configureTestingModule({
       declarations: [ RegisterFormComponent ],
@@ -28,6 +28,7 @@ xdescribe('RegisterFormComponent', () => {
     fixture = TestBed.createComponent(RegisterFormComponent);
     userServiceSpy = TestBed.inject(UsersService) as jasmine.SpyObj<UsersService>;
     component = fixture.componentInstance;
+    userServiceSpy.isAvailableByEmail.and.returnValue(mockObservable({isAvailable: true}));
     fixture.detectChanges();
   });
 
@@ -188,4 +189,20 @@ xdescribe('RegisterFormComponent', () => {
     expect(component.form.valid).toBeTruthy();
     expect(userServiceSpy.create).toHaveBeenCalled();
   }));
+
+  it('should show an error with an invalid email', () => {
+    //Arrange
+    userServiceSpy.isAvailableByEmail.and.returnValue(mockObservable({isAvailable: false}));
+    setInputValue(fixture, 'input#email', 'maria@mail.com');
+    //Act
+    fixture.detectChanges();
+
+    //Assert
+    expect(component.emailField?.invalid).toBeTrue();
+    expect(userServiceSpy.isAvailableByEmail).toHaveBeenCalledWith('maria@mail.com');
+
+    const errorMsg = getText(fixture, 'emailField-not-available');
+    expect(errorMsg).toContain('The email is already registered');
+
+  });
 });
