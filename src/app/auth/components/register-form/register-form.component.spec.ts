@@ -201,7 +201,7 @@ fdescribe('RegisterFormComponent', () => {
     expect(component.emailField?.invalid).toBeTrue();
     expect(userServiceSpy.isAvailableByEmail).toHaveBeenCalledWith('maria@mail.com');
 
-    const errorMsg = getText(fixture, 'emailField-not-available');
+    const errorMsg = getText(fixture, 'emailField-email-not-available');
     expect(errorMsg).toContain('The email is already registered');
 
   });
